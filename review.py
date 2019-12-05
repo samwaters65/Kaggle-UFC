@@ -15,13 +15,14 @@ def isUSA(location):
         return 1
     else:
         return 0
-    
+
+
 def winner(winner):
-    if winner == 'Blue':
+    if winner == "Blue":
         return 1
-    if winner == 'Red':
+    if winner == "Red":
         return 2
-    if winner == 'Draw':
+    if winner == "Draw":
         return 0
 
 
@@ -37,7 +38,16 @@ data["WinnerTarget"] = data.Winner.apply(winner)
 
 data = pd.get_dummies(data, columns=["weight_class", "B_Stance", "R_Stance"])
 
-unusedCols = ["R_fighter", "B_fighter", "date", "location", "B_draw", "R_draw", "Winner", "Referee"]
+unusedCols = [
+    "R_fighter",
+    "B_fighter",
+    "date",
+    "location",
+    "B_draw",
+    "R_draw",
+    "Winner",
+    "Referee",
+]
 
 data.drop(axis=1, columns=unusedCols, inplace=True)
 
@@ -47,15 +57,23 @@ data.dropna(axis=0, how="any", inplace=True)
 
 postLen = data.shape[0]
 
-print(f'{round((postLen - beforeLen)/beforeLen, 4)*-100}% of records removed')
+print(f"{round((postLen - beforeLen)/beforeLen, 4)*-100}% of records removed")
 
 
-X = data.drop(axis=1, columns=['WinnerTarget'])
+X = data.drop(axis=1, columns=["WinnerTarget"])
 y = data.WinnerTarget
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 77)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=77
+)
+
+clf = LogisticRegression(
+    penalty="elasticnet", random_state=64, solver="saga", max_iter=100
+).fit(X_train, y_train)
 
 
+print(f"Base Score: {round(clf.score(X_test, y_test),4)*100}%")
 
 
+### Need to use random forest classifier for
 ### Idea: Test if Referee is statistically biased!
