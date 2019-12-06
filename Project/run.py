@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Thu Dec  5 22:27:55 2019
+
+@author: swaters
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Wed Dec  4 21:01:36 2019
 
 @author: swaters
@@ -11,26 +18,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 
-shouldScale = True
 
-def isUSA(location):
-    if "USA" in location:
-        return 1
-    else:
-        return 0
-
-
-def winner(winner):
-    if winner == "Blue":
-        return 1
-    if winner == "Red":
-        return 2
-    if winner == "Draw":
-        return 0
-
-
-filesDir = """C:\\Users\\swaters.PMIDSD\\Documents\\Continual Learning\\
-ML Practice\\Kaggle\\UFCData\\"""
 
 data = pd.read_csv(f"{filesDir}data.csv")
 
