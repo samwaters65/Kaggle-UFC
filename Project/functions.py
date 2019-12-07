@@ -5,7 +5,6 @@ Created on Thu Dec  5 22:28:21 2019
 @author: swaters
 """
 from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestRegressor
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import config as c
