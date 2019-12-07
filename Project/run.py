@@ -5,14 +5,10 @@ Created on Thu Dec  5 22:27:55 2019
 @author: swaters
 """
 
-from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 import pandas as pd
-
-
 import functions as f
 import config as c
-
 
 data = pd.read_csv(f"{c.filesDir}data.csv")
 
@@ -28,32 +24,42 @@ postLen = data_noNA.shape[0]
 
 print(f"{round((postLen - beforeLen)/beforeLen, 4)*-100}% of records removed")
 
+#### Baseline Performance (Kitchen Sink)
+
+model, baseline_test_score = f.runLogReg(data_noNA) 
 
 ##############
 # NEED CORRELATION REVIEW TO PRE-REMOVE VARIABLES. Then go through NA removal again (hopefully MORE records stay) 
 
  
+# Scaled Model:
 
-scaled_data = f.scaleData(data_noNA)
-    
+scaled_data = f.scaleXData(data_noNA) 
+scaled_data.insert(loc=scaled_data.shape[1], column='WinnerTarget', value=data_noNA.WinnerTarget)
+
+scaledModel, scaled_test_score = f.runLogReg(scaled_data)
+
+
+# Feature Reduction Iteration 1 (low threshold)
+
 first_iter_x_cols = f.findVars(scaled_data, importance_threshold = 0.005)
 
+data_reduced1 = data[first_iter_x_cols]
+data_reduced1.insert(loc=data_reduced1.shape[1], column='WinnerTarget', value=data.WinnerTarget)
 
-data_reduced = data[first_iter_x_cols]
-data_reduced.insert(loc=data_reduced.shape[1], column='WinnerTarget', value=data.WinnerTarget)
-
-beforeLen = data_reduced.shape[0]
-
-data_reduced_noNA = data_reduced.dropna(axis=0, how="any")
-
-postLen = data_reduced_noNA.shape[0]
-
+beforeLen = data_reduced1.shape[0]
+data_reduced1_noNA = data_reduced1.dropna(axis=0, how="any")
+postLen = data_reduced1_noNA.shape[0]
 print(f"{round((postLen - beforeLen)/beforeLen, 4)*-100}% of records removed")
 
+data_reduced1_scaled = f.scaleXData(data_reduced1)
+data_reduced1_scaled.insert(loc=data_reduced1_scaled.shape[1], column='WinnerTarget', value=data_reduced1_noNA.WinnerTarget)
+
+firstIterModel, firstIter_test_score = f.runLogReg(data_reduced1_scaled)
 
 
-
-second_iter_x_cols = f.findVars(data_reduced_noNA, importance_threshold=0.01)
+# Second Iteration - Higher importance threshold
+second_iter_x_cols = f.findVars(data_reduced1_noNA, importance_threshold=0.01)
 
 
 data_reduced = data[second_iter_x_cols]

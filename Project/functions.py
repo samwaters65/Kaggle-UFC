@@ -9,6 +9,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 import config as c
 import models as m
+from sklearn.linear_model import LogisticRegression
 
 def isUSA(location):
     if "USA" in location:
@@ -47,8 +48,30 @@ def findVars(df, target='WinnerTarget', importance_threshold=0.09):
     #return X, y, X_train, X_test, y_train, y_test
     return x_cols
 
-def scaleData(df):
+def scaleXData(df, target='WinnerTarget'):
     scaler = StandardScaler()
-    scaled_features = scaler.fit_transform(df.values)
-    scaled_data = pd.DataFrame(scaled_features, index = df.index, columns = df.columns)
+    df_x = df.drop(columns=[target])
+    scaled_features = scaler.fit_transform(df_x.values)
+    scaled_data = pd.DataFrame(scaled_features, index=df_x.index, columns=df_x.columns)
     return scaled_data
+
+
+def runLogReg(df):
+    X = df.drop(axis=1, columns=["WinnerTarget"])
+    y = df.WinnerTarget
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=77
+    )
+
+    clf = LogisticRegression(
+        penalty="elasticnet",
+        random_state=64,
+        solver="saga",
+        max_iter=100
+        # multi_class="auto",
+    ).fit(X_train, y_train)
+    # y_preds = clf.predict(X_test)
+    score = round(clf.score(X_test, y_test),4)*100
+    print(f"Base Score: {score}%")
+    return clf, score
