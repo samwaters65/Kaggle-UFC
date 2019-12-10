@@ -43,7 +43,7 @@ def findVars(df, target='WinnerTarget', importance_threshold=0.09):
         to_delete = lst.index(minNum)
         if minNum < importance_threshold:
             del lst[to_delete]
-            print(f'Removed {x_cols[to_delete]}')
+            print(f'Removed {x_cols[to_delete]}. Importance: {round(minNum,4)}')
             del x_cols[to_delete]
     #return X, y, X_train, X_test, y_train, y_test
     return x_cols

@@ -43,6 +43,7 @@ scaledModel, scaled_test_score = f.runLogReg(scaled_data)
 # Feature Reduction Iteration 1 (low threshold)
 
 first_iter_x_cols = f.findVars(scaled_data, importance_threshold = 0.005)
+print(f'Number of X_vars: {len(first_iter_x_cols)}')
 
 data_reduced1 = data[first_iter_x_cols]
 data_reduced1.insert(loc=data_reduced1.shape[1], column='WinnerTarget', value=data.WinnerTarget)
@@ -52,30 +53,51 @@ data_reduced1_noNA = data_reduced1.dropna(axis=0, how="any")
 postLen = data_reduced1_noNA.shape[0]
 print(f"{round((postLen - beforeLen)/beforeLen, 4)*-100}% of records removed")
 
-data_reduced1_scaled = f.scaleXData(data_reduced1)
+data_reduced1_scaled = f.scaleXData(data_reduced1_noNA)
 data_reduced1_scaled.insert(loc=data_reduced1_scaled.shape[1], column='WinnerTarget', value=data_reduced1_noNA.WinnerTarget)
 
 firstIterModel, firstIter_test_score = f.runLogReg(data_reduced1_scaled)
 
 
 # Second Iteration - Higher importance threshold
-second_iter_x_cols = f.findVars(data_reduced1_noNA, importance_threshold=0.01)
-
+second_iter_x_cols = f.findVars(data_reduced1_noNA, importance_threshold=0.015)
+print(f'Number of X_vars: {len(second_iter_x_cols)}')
 
 data_reduced = data[second_iter_x_cols]
 data_reduced.insert(loc=data_reduced.shape[1], column='WinnerTarget', value=data.WinnerTarget)
 
 
 beforeLen = data_reduced.shape[0]
-
-data_reduced_noNA = data_reduced.dropna(axis=0, how="any")
-
-postLen = data_reduced_noNA.shape[0]
+data_reduced2_noNA = data_reduced.dropna(axis=0, how="any")
+postLen = data_reduced2_noNA.shape[0]
 
 print(f"{round((postLen - beforeLen)/beforeLen, 4)*-100}% of records removed")
 
 
-scaled_data = scaleData(data_reduced_noNA)
+data_reduced2_scaled = f.scaleXData(data_reduced2_noNA)
+data_reduced2_scaled.insert(loc=data_reduced2_scaled.shape[1], column='WinnerTarget', value=data_reduced2_noNA.WinnerTarget)
+secondIterModel, secondIter_test_score = f.runLogReg(data_reduced2_scaled)
+
+
+
+# Third Iteration
+third_iter_x_cols = f.findVars(data_reduced2_noNA, importance_threshold=0.15)
+print(f'Number of X_vars: {len(third_iter_x_cols)}')
+
+data_reduced = data[third_iter_x_cols]
+data_reduced.insert(loc=data_reduced.shape[1], column='WinnerTarget', value=data.WinnerTarget)
+
+
+beforeLen = data_reduced.shape[0]
+data_reduced3_noNA = data_reduced.dropna(axis=0, how="any")
+postLen = data_reduced3_noNA.shape[0]
+
+print(f"{round((postLen - beforeLen)/beforeLen, 4)*-100}% of records removed")
+
+
+data_reduced3_scaled = f.scaleXData(data_reduced3_noNA)
+data_reduced3_scaled.insert(loc=data_reduced3_scaled.shape[1], column='WinnerTarget', value=data_reduced3_noNA.WinnerTarget)
+thirdIterModel, thirdIter_test_score = f.runLogReg(data_reduced3_scaled)
 
 
 #####################
